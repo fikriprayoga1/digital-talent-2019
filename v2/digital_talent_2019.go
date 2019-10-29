@@ -220,7 +220,7 @@ func updateDataHandler3(w http.ResponseWriter, r *http.Request) {
 	}
 
 	details := inputData{
-		Temperature: r.FormValue("ledLogic"),
+		Temperature: r.FormValue("temperature"),
 	}
 
 	// do something with details
