@@ -18,7 +18,7 @@ type responseObject struct {
 }
 
 type inputData struct {
-	Temperature int
+	Temperature string
 }
 
 type updateDataObject struct {
@@ -35,7 +35,7 @@ type readDataObject struct {
 	LED         string
 }
 
-var ledHolder = 0
+var ledHolder = ""
 var tmpl = template.Must(template.ParseFiles("forms.html"))
 
 //Function Helper
