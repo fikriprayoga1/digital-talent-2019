@@ -224,7 +224,12 @@ func updateDataHandler3(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// do something with details
-	ledHolder = details.LedLogic
+	inputHolder := details.LedLogic
+	if inputHolder == "0" {
+		ledHolder = "Mati"
+	} else if inputHolder == "1" {
+		ledHolder = "Hidup"
+	}
 	log.Println(ledHolder)
 
 	tmpl.Execute(w, struct{ Success bool }{true})
