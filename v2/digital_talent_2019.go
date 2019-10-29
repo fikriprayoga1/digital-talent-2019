@@ -17,7 +17,7 @@ type responseObject struct {
 }
 
 type inputData struct {
-	LedLogic string
+	Temperature string
 }
 
 type updateDataObject struct {
@@ -220,12 +220,12 @@ func updateDataHandler3(w http.ResponseWriter, r *http.Request) {
 	}
 
 	details := inputData{
-		LedLogic: r.FormValue("ledLogic"),
+		Temperature: r.FormValue("ledLogic"),
 	}
 
 	// do something with details
-	ledHolder = details.LedLogic
-	log.Println(r.FormValue("ledLogic"))
+	ledHolder = details.Temperature
+	log.Println(details.Temperature)
 
 	tmpl.Execute(w, struct{ Success bool }{true})
 
