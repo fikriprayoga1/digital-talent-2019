@@ -3,13 +3,12 @@ package main
 
 import (
     "html/template"
-    "net/http"
+	"net/http"
+	"log"
 )
 
 type ContactDetails struct {
-    Email   string
-    Subject string
-    Message string
+    Temeprature   string
 }
 
 func main() {
@@ -22,13 +21,12 @@ func main() {
         }
 
         details := ContactDetails{
-            Email:   r.FormValue("email"),
-            Subject: r.FormValue("subject"),
-            Message: r.FormValue("message"),
+            Temeprature:   r.FormValue("temperature"),
         }
 
-        // do something with details
-        _ = details
+		// do something with details
+		log.Println(details.Temeprature)
+        _ = details.Temeprature
 
         tmpl.Execute(w, struct{ Success bool }{true})
     })
