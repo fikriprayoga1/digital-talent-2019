@@ -1,39 +1,38 @@
 package main
 
 import (
-	"net/http"
-	"encoding/json"
-	"log"
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
-	"io/ioutil"
-	"strconv"
+	"encoding/json"
 	"html/template"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"strconv"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 //Object
 type responseObject struct {
-    	Response    	string
-
+	Response string
 }
 
 type inputData struct {
-    Temperature   int
+	Temperature int
 }
 
 type updateDataObject struct {
-	Name		string
-	Temperature	string
-	Humidity	string
-	OldName		string
-
+	Name        string
+	Temperature string
+	Humidity    string
+	OldName     string
 }
 
 type readDataObject struct {
-	Name		string
-	Temperature	string
-	Humidity	string
-	LED         	string
+	Name        string
+	Temperature string
+	Humidity    string
+	LED         string
 }
 
 var ledHolder = 0
@@ -57,7 +56,7 @@ func initDatabase(database *sql.DB) *sql.Tx {
 
 }
 
-func updateResponseParser (request *http.Request) *updateDataObject {
+func updateResponseParser(request *http.Request) *updateDataObject {
 	body, err0 := ioutil.ReadAll(request.Body)
 	if err0 != nil {
 		log.Println(err0)
@@ -112,9 +111,9 @@ func createDataHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
-    	m2 := responseObject{"Create data success"}
-   	b, err2 := json.Marshal(m2)
-    	if err2 != nil {
+	m2 := responseObject{"Create data success"}
+	b, err2 := json.Marshal(m2)
+	if err2 != nil {
 		log.Println(err2)
 	}
 	w.Write(b)
@@ -142,10 +141,10 @@ func readDataHandler(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		rows.Scan(&mName, &mTemperature, &mHumidity)
 		intTemp, err2 := strconv.ParseFloat(mTemperature, 64)
-    	if err2 != nil {
-        	log.Println(err2)
-    	}
-		if(intTemp >= 29) {
+		if err2 != nil {
+			log.Println(err2)
+		}
+		if intTemp >= 29 {
 			mLED = "Hidup"
 
 		}
@@ -156,8 +155,8 @@ func readDataHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
-    	b, err2 := json.Marshal(mDeviceDataList)
-    	if err2 != nil {
+	b, err2 := json.Marshal(mDeviceDataList)
+	if err2 != nil {
 		log.Println(err2)
 	}
 	w.Write(b)
@@ -225,27 +224,26 @@ func updateDataHandler2(w http.ResponseWriter, r *http.Request) {
 	if err1 != nil {
 		log.Println(err1)
 	}
-	if(intTemp >= 29) {
+	if intTemp >= 29 {
 		mLED = "H"
 	}
 	w.Write([]byte(mLED))
 
 }
 
-fun updateDataHandler3(w http.ResponseWriter, r *http.Request) {
+func updateDataHandler3(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		tmpl.Execute(w, nil)
 		return
 	}
 
 	details := inputData{
-		Temperature:   r.FormValue("temperature"),
+		Temperature: r.FormValue("temperature"),
 	}
 
 	// do something with details
 	ledHolder = details.Temperature
 	log.Println(ledHolder)
-
 
 	tmpl.Execute(w, struct{ Success bool }{true})
 
@@ -274,9 +272,9 @@ func deleteDataHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
-    m2 := responseObject{"Delete data success"}
-    b, err1 := json.Marshal(m2)
-    if err1 != nil {
+	m2 := responseObject{"Delete data success"}
+	b, err1 := json.Marshal(m2)
+	if err1 != nil {
 		log.Println(err1)
 	}
 	w.Write(b)
