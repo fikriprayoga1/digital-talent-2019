@@ -7,8 +7,8 @@ import (
 	"log"
 )
 
-type ContactDetails struct {
-    Temeprature   string
+type inputData struct {
+    Temprature   string
 }
 
 func main() {
@@ -20,8 +20,8 @@ func main() {
             return
         }
 
-        details := ContactDetails{
-            Temeprature:   r.FormValue("temperature"),
+        details := inputData{
+            Temprature:   r.FormValue("temperature"),
         }
 
 		// do something with details
