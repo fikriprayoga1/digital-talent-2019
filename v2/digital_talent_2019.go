@@ -225,7 +225,7 @@ func updateDataHandler3(w http.ResponseWriter, r *http.Request) {
 
 	// do something with details
 	ledHolder = details.LedLogic
-	log.Println(details.LedLogic)
+	log.Println(r.FormValue("ledLogic"))
 
 	tmpl.Execute(w, struct{ Success bool }{true})
 
