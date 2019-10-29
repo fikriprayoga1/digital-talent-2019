@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strconv"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -18,7 +17,7 @@ type responseObject struct {
 }
 
 type inputData struct {
-	Temperature string
+	Led string
 }
 
 type updateDataObject struct {
@@ -35,7 +34,7 @@ type readDataObject struct {
 	LED         string
 }
 
-var ledHolder = ""
+var ledHolder = "Mati"
 var tmpl = template.Must(template.ParseFiles("forms.html"))
 
 //Function Helper
@@ -133,22 +132,13 @@ func readDataHandler(w http.ResponseWriter, r *http.Request) {
 	mTemperature := ""
 	mHumidity := ""
 	var mDeviceDataList []readDataObject
-	mLED := "Mati"
 	rows, err1 := tx.Query("SELECT name, temperature, humidity FROM sbmList")
 	if err1 != nil {
 		log.Println(err1)
 	}
 	for rows.Next() {
 		rows.Scan(&mName, &mTemperature, &mHumidity)
-		intTemp, err2 := strconv.ParseFloat(mTemperature, 64)
-		if err2 != nil {
-			log.Println(err2)
-		}
-		if intTemp >= 29 {
-			mLED = "Hidup"
-
-		}
-		mDeviceDataList = append(mDeviceDataList, readDataObject{mName, mTemperature, mHumidity, mLED})
+		mDeviceDataList = append(mDeviceDataList, readDataObject{mName, mTemperature, mHumidity, ledHolder})
 
 	}
 
@@ -219,15 +209,7 @@ func updateDataHandler2(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
-	mLED := "M"
-	intTemp, err1 := strconv.ParseFloat(m.Temperature, 64)
-	if err1 != nil {
-		log.Println(err1)
-	}
-	if intTemp >= 29 {
-		mLED = "H"
-	}
-	w.Write([]byte(mLED))
+	w.Write([]byte(ledHolder))
 
 }
 
@@ -238,11 +220,11 @@ func updateDataHandler3(w http.ResponseWriter, r *http.Request) {
 	}
 
 	details := inputData{
-		Temperature: r.FormValue("temperature"),
+		Led: r.FormValue("led"),
 	}
 
 	// do something with details
-	ledHolder = details.Temperature
+	ledHolder = details.Led
 	log.Println(ledHolder)
 
 	tmpl.Execute(w, struct{ Success bool }{true})
