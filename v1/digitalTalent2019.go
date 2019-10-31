@@ -1,34 +1,33 @@
 package main
 
 import (
-	"net/http"
-	"encoding/json"
-	"log"
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
+	"encoding/json"
 	"io/ioutil"
+	"log"
+	"net/http"
 	"strconv"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 //Object
 type responseObject struct {
-    	Response    	string
-
+	Response string
 }
 
 type updateDataObject struct {
-	Name		string
-	Temperature	string
-	Humidity	string
-	OldName		string
-
+	Name        string
+	Temperature string
+	Humidity    string
+	OldName     string
 }
 
 type readDataObject struct {
-	Name		string
-	Temperature	string
-	Humidity	string
-	LED         	string
+	Name        string
+	Temperature string
+	Humidity    string
+	LED         string
 }
 
 //Function Helper
@@ -49,7 +48,7 @@ func initDatabase(database *sql.DB) *sql.Tx {
 
 }
 
-func updateResponseParser (request *http.Request) *updateDataObject {
+func updateResponseParser(request *http.Request) *updateDataObject {
 	body, err0 := ioutil.ReadAll(request.Body)
 	if err0 != nil {
 		log.Println(err0)
@@ -103,9 +102,9 @@ func createDataHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
-    	m2 := responseObject{"Create data success"}
-   	b, err2 := json.Marshal(m2)
-    	if err2 != nil {
+	m2 := responseObject{"Create data success"}
+	b, err2 := json.Marshal(m2)
+	if err2 != nil {
 		log.Println(err2)
 	}
 	w.Write(b)
@@ -133,10 +132,10 @@ func readDataHandler(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		rows.Scan(&mName, &mTemperature, &mHumidity)
 		intTemp, err2 := strconv.ParseFloat(mTemperature, 64)
-    	if err2 != nil {
-        	log.Println(err2)
-    	}
-		if(intTemp >= 29) {
+		if err2 != nil {
+			log.Println(err2)
+		}
+		if intTemp >= 29 {
 			mLED = "Hidup"
 
 		}
@@ -147,8 +146,8 @@ func readDataHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
-    	b, err2 := json.Marshal(mDeviceDataList)
-    	if err2 != nil {
+	b, err2 := json.Marshal(mDeviceDataList)
+	if err2 != nil {
 		log.Println(err2)
 	}
 	w.Write(b)
@@ -216,41 +215,9 @@ func updateDataHandler2(w http.ResponseWriter, r *http.Request) {
 	if err1 != nil {
 		log.Println(err1)
 	}
-	if(intTemp >= 29) {
+	if intTemp >= 29 {
 		mLED = "H"
 	}
 	w.Write([]byte(mLED))
-
-}
-
-func deleteDataHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(0)
-
-	mName := r.FormValue("name")
-
-	database, err0 := sql.Open("sqlite3", "./digitalTalent2019.db")
-	if err0 != nil {
-		log.Println(err0)
-	}
-	tx := initDatabase(database)
-	defer database.Close()
-	defer tx.Commit()
-
-	stmt, err0 := tx.Prepare("DELETE FROM equipmentList WHERE name=?")
-	if err0 != nil {
-		log.Println(err0)
-	}
-	stmt.Exec(mName)
-	defer stmt.Close()
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-    m2 := responseObject{"Delete data success"}
-    b, err1 := json.Marshal(m2)
-    if err1 != nil {
-		log.Println(err1)
-	}
-	w.Write(b)
 
 }

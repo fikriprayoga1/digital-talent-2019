@@ -6,8 +6,8 @@ import (
 	"html/template"
 	"io/ioutil"
 	"log"
-	"strconv"
 	"net/http"
+	"strconv"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -33,7 +33,6 @@ type readDataObject struct {
 	Temperature string
 	Humidity    string
 	LED         string
-
 }
 
 var ledHolder = ""
@@ -46,7 +45,7 @@ func initDatabase(database *sql.DB) *sql.Tx {
 		log.Println(err2)
 	}
 
-	stmt, err3 := tx.Prepare("CREATE TABLE IF NOT EXISTS sbmList (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, temperature TEXT, humidity TEXT)")
+	stmt, err3 := tx.Prepare("CREATE TABLE IF NOT EXISTS equipmentList (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, temperature TEXT, humidity TEXT)")
 	if err3 != nil {
 		log.Println(err3)
 	}
@@ -101,7 +100,7 @@ func createDataHandler(w http.ResponseWriter, r *http.Request) {
 	defer database.Close()
 	defer tx.Commit()
 
-	stmt, err1 := tx.Prepare("INSERT INTO sbmList (name, temperature, humidity) VALUES (?, ?, ?)")
+	stmt, err1 := tx.Prepare("INSERT INTO equipmentList (name, temperature, humidity) VALUES (?, ?, ?)")
 	if err1 != nil {
 		log.Println(err1)
 	}
@@ -133,7 +132,7 @@ func readDataHandler(w http.ResponseWriter, r *http.Request) {
 	mTemperature := ""
 	mHumidity := ""
 	var mDeviceDataList []readDataObject
-	rows, err1 := tx.Query("SELECT name, temperature, humidity FROM sbmList")
+	rows, err1 := tx.Query("SELECT name, temperature, humidity FROM equipmentList")
 	if err1 != nil {
 		log.Println(err1)
 	}
@@ -142,7 +141,7 @@ func readDataHandler(w http.ResponseWriter, r *http.Request) {
 		mCondition := "Mati"
 		ledHolder2, _ := strconv.ParseInt(ledHolder, 10, 32)
 		mTemperature2, _ := strconv.ParseFloat(mTemperature, 32)
-		if((mTemperature2 >= 30.00) && (ledHolder2 >= 50)) {
+		if (mTemperature2 >= 30.00) && (ledHolder2 >= 50) {
 			mCondition = "Hidup"
 
 		} else {
@@ -181,7 +180,7 @@ func updateDataHandler(w http.ResponseWriter, r *http.Request) {
 	defer database.Close()
 	defer tx.Commit()
 
-	stmt, err0 := tx.Prepare("UPDATE sbmList SET name=?, temperature=?, humidity=? WHERE name=?")
+	stmt, err0 := tx.Prepare("UPDATE equipmentList SET name=?, temperature=?, humidity=? WHERE name=?")
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -211,7 +210,7 @@ func updateDataHandler2(w http.ResponseWriter, r *http.Request) {
 	defer database.Close()
 	defer tx.Commit()
 
-	stmt, err0 := tx.Prepare("UPDATE sbmList SET name=?, temperature=?, humidity=? WHERE name=?")
+	stmt, err0 := tx.Prepare("UPDATE equipmentList SET name=?, temperature=?, humidity=? WHERE name=?")
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -224,15 +223,15 @@ func updateDataHandler2(w http.ResponseWriter, r *http.Request) {
 	mValue := m.Temperature
 	mValue2, _ := strconv.ParseFloat(mValue, 64)
 
-        mCond := "Mati"
+	mCond := "Mati"
 	ledHolder2, _ := strconv.ParseInt(ledHolder, 10, 32)
-	if((mValue2 >= 30.00) && (ledHolder2 >= 50)) {
+	if (mValue2 >= 30.00) && (ledHolder2 >= 50) {
 		mCond = "Hidup"
 
 	} else {
 
 		mCond = "Mati"
-}
+	}
 
 	w.Write([]byte(mCond))
 
@@ -251,7 +250,6 @@ func updateDataHandler3(w http.ResponseWriter, r *http.Request) {
 	// do something with details
 	inputHolder2 := details.People
 	ledHolder = inputHolder2
-
 
 	log.Println(inputHolder2)
 
