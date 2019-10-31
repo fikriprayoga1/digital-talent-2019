@@ -18,7 +18,6 @@ type responseObject struct {
 }
 
 type inputData struct {
-	Temperature string
 	People string
 }
 
@@ -34,9 +33,10 @@ type readDataObject struct {
 	Temperature string
 	Humidity    string
 	LED         string
+
 }
 
-var ledHolder = "Mati"
+var ledHolder = ""
 var tmpl = template.Must(template.ParseFiles("forms.html"))
 
 //Function Helper
@@ -79,7 +79,6 @@ func main() {
 	mux.HandleFunc("/updateData", updateDataHandler)
 	mux.HandleFunc("/updateData2", updateDataHandler2)
 	mux.HandleFunc("/updateData3", updateDataHandler3)
-	mux.HandleFunc("/deleteData", deleteDataHandler)
 
 	http.ListenAndServe(":8080", mux)
 }
@@ -94,7 +93,7 @@ func createDataHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(mTemperature)
 	log.Println(mHumidity)
 
-	database, err0 := sql.Open("sqlite3", "./sbm.db")
+	database, err0 := sql.Open("sqlite3", "./digitalTalent2019.db")
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -122,7 +121,7 @@ func createDataHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func readDataHandler(w http.ResponseWriter, r *http.Request) {
-	database, err0 := sql.Open("sqlite3", "./sbm.db")
+	database, err0 := sql.Open("sqlite3", "./digitalTalent2019.db")
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -140,7 +139,18 @@ func readDataHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	for rows.Next() {
 		rows.Scan(&mName, &mTemperature, &mHumidity)
-		mDeviceDataList = append(mDeviceDataList, readDataObject{mName, mTemperature, mHumidity, ledHolder})
+		mCondition := "Mati"
+		ledHolder2, _ := strconv.ParseInt(ledHolder, 10, 32)
+		mTemperature2, _ := strconv.ParseFloat(mTemperature, 32)
+		if((mTemperature2 >= 30.00) && (ledHolder2 >= 50)) {
+			mCondition = "Hidup"
+
+		} else {
+
+			mCondition = "Mati"
+
+		}
+		mDeviceDataList = append(mDeviceDataList, readDataObject{mName, mTemperature, mHumidity, mCondition})
 
 	}
 
@@ -163,7 +173,7 @@ func updateDataHandler(w http.ResponseWriter, r *http.Request) {
 	mHumidity := r.FormValue("humidity")
 	mOldName := r.FormValue("oldName")
 
-	database, err0 := sql.Open("sqlite3", "./sbm.db")
+	database, err0 := sql.Open("sqlite3", "./digitalTalent2019.db")
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -193,7 +203,7 @@ func updateDataHandler(w http.ResponseWriter, r *http.Request) {
 func updateDataHandler2(w http.ResponseWriter, r *http.Request) {
 	m := updateResponseParser(r)
 
-	database, err0 := sql.Open("sqlite3", "./sbm.db")
+	database, err0 := sql.Open("sqlite3", "./digitalTalent2019.db")
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -211,7 +221,20 @@ func updateDataHandler2(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
-	w.Write([]byte(ledHolder))
+	mValue := m.Temperature
+	mValue2, _ := strconv.ParseFloat(mValue, 64)
+
+        mCond := "Mati"
+	ledHolder2, _ := strconv.ParseInt(ledHolder, 10, 32)
+	if((mValue2 >= 30.00) && (ledHolder2 >= 50)) {
+		mCond = "Hidup"
+
+	} else {
+
+		mCond = "Mati"
+}
+
+	w.Write([]byte(mCond))
 
 }
 
@@ -222,54 +245,16 @@ func updateDataHandler3(w http.ResponseWriter, r *http.Request) {
 	}
 
 	details := inputData{
-		Temperature: r.FormValue("temperature"),
 		People: r.FormValue("people"),
 	}
 
 	// do something with details
-	inputHolder := details.Temperature
 	inputHolder2 := details.People
-	inputHolder3, _ := strconv.ParseInt(inputHolder, 10, 32)
-	inputHolder4, _ := strconv.ParseInt(inputHolder2, 10, 32)
+	ledHolder = inputHolder2
 
-	if((inputHolder3 >= 30) && (inputHolder4 >= 50)) {
-		ledHolder = "hidup"
-	}
 
-	log.Println(ledHolder)
+	log.Println(inputHolder2)
 
 	tmpl.Execute(w, struct{ Success bool }{true})
-
-}
-
-func deleteDataHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(0)
-
-	mName := r.FormValue("name")
-
-	database, err0 := sql.Open("sqlite3", "./sbm.db")
-	if err0 != nil {
-		log.Println(err0)
-	}
-	tx := initDatabase(database)
-	defer database.Close()
-	defer tx.Commit()
-
-	stmt, err0 := tx.Prepare("DELETE FROM sbmList WHERE name=?")
-	if err0 != nil {
-		log.Println(err0)
-	}
-	stmt.Exec(mName)
-	defer stmt.Close()
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	m2 := responseObject{"Delete data success"}
-	b, err1 := json.Marshal(m2)
-	if err1 != nil {
-		log.Println(err1)
-	}
-	w.Write(b)
 
 }
