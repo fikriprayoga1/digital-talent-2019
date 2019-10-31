@@ -2,10 +2,12 @@
     <h1>Terima kasih. Input anda sudah masuk ke server</h1>
 {{else}}
     <h1>Masukkan input lampu</h1><br />
-    <h2>Input berupa angka, jika 0 maka lampu mati, jika 1 hidup</h2>
+    <h2>Inputlah suhu dan juga jumlah orang</h2>
     <form method="POST">
         <label>Suhu :</label><br />
-        <input type="number" name="ledLogic"><br />
+        <input type="number" name="temperature"><br />
+	<label>Jumlah orang :</label><br />
+	<input type="number" name="people"><br />
         <input type="submit">
     </form>
 {{end}}

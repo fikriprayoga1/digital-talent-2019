@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"log"
+	"strconv"
 	"net/http"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -17,7 +18,8 @@ type responseObject struct {
 }
 
 type inputData struct {
-	LedLogic string
+	Temperature string
+	People string
 }
 
 type updateDataObject struct {
@@ -220,16 +222,20 @@ func updateDataHandler3(w http.ResponseWriter, r *http.Request) {
 	}
 
 	details := inputData{
-		LedLogic: r.FormValue("ledLogic"),
+		Temperature: r.FormValue("temperature"),
+		People: r.FormValue("people"),
 	}
 
 	// do something with details
-	inputHolder := details.LedLogic
-	if inputHolder == "0" {
-		ledHolder = "Mati"
-	} else if inputHolder == "1" {
-		ledHolder = "Hidup"
+	inputHolder := details.Temperature
+	inputHolder2 := details.People
+	inputHolder3, _ := strconv.ParseInt(inputHolder, 10, 32)
+	inputHolder4, _ := strconv.ParseInt(inputHolder2, 10, 32)
+
+	if((inputHolder3 >= 30) && (inputHolder4 >= 50)) {
+		ledHolder = "hidup"
 	}
+
 	log.Println(ledHolder)
 
 	tmpl.Execute(w, struct{ Success bool }{true})
