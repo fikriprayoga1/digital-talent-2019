@@ -69,7 +69,6 @@ func main() {
 	mux.HandleFunc("/readData", readDataHandler)
 	mux.HandleFunc("/updateData", updateDataHandler)
 	mux.HandleFunc("/updateData2", updateDataHandler2)
-	mux.HandleFunc("/deleteData", deleteDataHandler)
 
 	http.ListenAndServe(":1810", mux)
 }
