@@ -38,7 +38,7 @@ func initDatabase(database *sql.DB) *sql.Tx {
 		log.Println(err2)
 	}
 
-	stmt, err3 := tx.Prepare("CREATE TABLE IF NOT EXISTS sbmList (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, temperature TEXT, humidity TEXT)")
+	stmt, err3 := tx.Prepare("CREATE TABLE IF NOT EXISTS equipmentList (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, temperature TEXT, humidity TEXT)")
 	if err3 != nil {
 		log.Println(err3)
 	}
@@ -85,7 +85,7 @@ func createDataHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(mTemperature)
 	log.Println(mHumidity)
 
-	database, err0 := sql.Open("sqlite3", "./sbm.db")
+	database, err0 := sql.Open("sqlite3", "./digitalTalent2019.db")
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -93,7 +93,7 @@ func createDataHandler(w http.ResponseWriter, r *http.Request) {
 	defer database.Close()
 	defer tx.Commit()
 
-	stmt, err1 := tx.Prepare("INSERT INTO sbmList (name, temperature, humidity) VALUES (?, ?, ?)")
+	stmt, err1 := tx.Prepare("INSERT INTO equipmentList (name, temperature, humidity) VALUES (?, ?, ?)")
 	if err1 != nil {
 		log.Println(err1)
 	}
@@ -113,7 +113,7 @@ func createDataHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func readDataHandler(w http.ResponseWriter, r *http.Request) {
-	database, err0 := sql.Open("sqlite3", "./sbm.db")
+	database, err0 := sql.Open("sqlite3", "./digitalTalent2019.db")
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -126,7 +126,7 @@ func readDataHandler(w http.ResponseWriter, r *http.Request) {
 	mHumidity := ""
 	var mDeviceDataList []readDataObject
 	mLED := "Mati"
-	rows, err1 := tx.Query("SELECT name, temperature, humidity FROM sbmList")
+	rows, err1 := tx.Query("SELECT name, temperature, humidity FROM equipmentList")
 	if err1 != nil {
 		log.Println(err1)
 	}
@@ -163,7 +163,7 @@ func updateDataHandler(w http.ResponseWriter, r *http.Request) {
 	mHumidity := r.FormValue("humidity")
 	mOldName := r.FormValue("oldName")
 
-	database, err0 := sql.Open("sqlite3", "./sbm.db")
+	database, err0 := sql.Open("sqlite3", "./digitalTalent2019.db")
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -171,7 +171,7 @@ func updateDataHandler(w http.ResponseWriter, r *http.Request) {
 	defer database.Close()
 	defer tx.Commit()
 
-	stmt, err0 := tx.Prepare("UPDATE sbmList SET name=?, temperature=?, humidity=? WHERE name=?")
+	stmt, err0 := tx.Prepare("UPDATE equipmentList SET name=?, temperature=?, humidity=? WHERE name=?")
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -193,7 +193,7 @@ func updateDataHandler(w http.ResponseWriter, r *http.Request) {
 func updateDataHandler2(w http.ResponseWriter, r *http.Request) {
 	m := updateResponseParser(r)
 
-	database, err0 := sql.Open("sqlite3", "./sbm.db")
+	database, err0 := sql.Open("sqlite3", "./digitalTalent2019.db")
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -201,7 +201,7 @@ func updateDataHandler2(w http.ResponseWriter, r *http.Request) {
 	defer database.Close()
 	defer tx.Commit()
 
-	stmt, err0 := tx.Prepare("UPDATE sbmList SET name=?, temperature=?, humidity=? WHERE name=?")
+	stmt, err0 := tx.Prepare("UPDATE equipmentList SET name=?, temperature=?, humidity=? WHERE name=?")
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -228,7 +228,7 @@ func deleteDataHandler(w http.ResponseWriter, r *http.Request) {
 
 	mName := r.FormValue("name")
 
-	database, err0 := sql.Open("sqlite3", "./sbm.db")
+	database, err0 := sql.Open("sqlite3", "./digitalTalent2019.db")
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -236,7 +236,7 @@ func deleteDataHandler(w http.ResponseWriter, r *http.Request) {
 	defer database.Close()
 	defer tx.Commit()
 
-	stmt, err0 := tx.Prepare("DELETE FROM sbmList WHERE name=?")
+	stmt, err0 := tx.Prepare("DELETE FROM equipmentList WHERE name=?")
 	if err0 != nil {
 		log.Println(err0)
 	}
